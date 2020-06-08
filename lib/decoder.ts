@@ -22,7 +22,7 @@ export default class BmpDecoder implements IImage {
   public colors!: number;
   public importantColors!: number;
   public palette!: IColor[];
-  public data!: Buffer;
+  public data!: Uint8Array;
 
   private maskRed!: number;
   private maskGreen!: number;
@@ -33,7 +33,8 @@ export default class BmpDecoder implements IImage {
 
   private pos: number;
   private bottomUp: boolean;
-  private readonly buffer: Buffer;
+  private readonly buffer: Uint8Array;
+  private readonly bufferView: DataView;
 
   private readonly locRed: number;
   private readonly locGreen: number;
@@ -45,12 +46,13 @@ export default class BmpDecoder implements IImage {
   private shiftBlue!: (x: number) => number;
   private shiftAlpha!: (x: number) => number;
 
-  constructor(buffer: Buffer, { toRGBA }: IDecoderOptions = { toRGBA: false }) {
+  constructor(buffer: Uint8Array, { toRGBA }: IDecoderOptions = { toRGBA: false }) {
     this.buffer = buffer;
+    this.bufferView = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
     this.toRGBA = !!toRGBA;
-    this.pos = 0;
     this.bottomUp = true;
-    this.flag = this.buffer.toString('utf-8', 0, (this.pos += 2));
+    this.flag = String.fromCharCode(this.buffer[0]) + String.fromCharCode(this.buffer[1]);
+    this.pos = 2;
 
     if (this.flag !== 'BM') {
       throw new Error('Invalid BMP File');
@@ -68,9 +70,9 @@ export default class BmpDecoder implements IImage {
   private parseHeader() {
     this.fileSize = this.readUInt32LE();
 
-    this.reserved1 = this.buffer.readUInt16LE(this.pos);
+    this.reserved1 = this.bufferView.getUint16(this.pos, true);
     this.pos += 2;
-    this.reserved2 = this.buffer.readUInt16LE(this.pos);
+    this.reserved2 = this.bufferView.getUint16(this.pos, true);
     this.pos += 2;
 
     this.offset = this.readUInt32LE();
@@ -85,9 +87,9 @@ export default class BmpDecoder implements IImage {
     this.width = this.readUInt32LE();
     this.height = this.readUInt32LE();
 
-    this.planes = this.buffer.readUInt16LE(this.pos);
+    this.planes = this.bufferView.getUint16(this.pos, true);
     this.pos += 2;
-    this.bitPP = this.buffer.readUInt16LE(this.pos);
+    this.bitPP = this.bufferView.getUint16(this.pos, true);
     this.pos += 2;
 
     this.compression = this.readUInt32LE();
@@ -152,10 +154,10 @@ export default class BmpDecoder implements IImage {
       this.palette = new Array(len);
 
       for (let i = 0; i < len; i++) {
-        const blue = this.buffer.readUInt8(this.pos++);
-        const green = this.buffer.readUInt8(this.pos++);
-        const red = this.buffer.readUInt8(this.pos++);
-        const quad = this.buffer.readUInt8(this.pos++);
+        const blue = this.buffer[this.pos++];
+        const green = this.buffer[this.pos++];
+        const red = this.buffer[this.pos++];
+        const quad = this.buffer[this.pos++];
 
         this.palette[i] = {
           red,
@@ -188,7 +190,7 @@ export default class BmpDecoder implements IImage {
   }
 
   private parseRGBA() {
-    this.data = Buffer.alloc(this.width * this.height * 4);
+    this.data = new Uint8Array(this.width * this.height * 4);
 
     switch (this.bitPP) {
       case 1:
@@ -223,7 +225,7 @@ export default class BmpDecoder implements IImage {
         lastLine = line;
       }
 
-      const b = this.buffer.readUInt8(this.pos++);
+      const b = this.buffer[this.pos++];
       const location = line * this.width * 4 + x * 8 * 4;
 
       for (let i = 0; i < 8; i++) {
@@ -250,8 +252,8 @@ export default class BmpDecoder implements IImage {
       let location = 0;
 
       while (location < this.data.length) {
-        const a = this.buffer.readUInt8(this.pos++);
-        const b = this.buffer.readUInt8(this.pos++);
+        const a = this.buffer[this.pos++];
+        const b = this.buffer[this.pos++];
 
         //absolute mode
         if (a === 0) {
@@ -271,13 +273,13 @@ export default class BmpDecoder implements IImage {
 
           if (b === 2) {
             // offset x, y
-            const x = this.buffer.readUInt8(this.pos++);
-            const y = this.buffer.readUInt8(this.pos++);
+            const x = this.buffer[this.pos++];
+            const y = this.buffer[this.pos++];
 
             lines += this.bottomUp ? -y : y;
             location += y * this.width * 4 + x * 4;
           } else {
-            let c = this.buffer.readUInt8(this.pos++);
+            let c = this.buffer[this.pos++];
 
             for (let i = 0; i < b; i++) {
               location = this.setPixelData(
@@ -286,7 +288,7 @@ export default class BmpDecoder implements IImage {
               );
 
               if (i & 1 && i + 1 < b) {
-                c = this.buffer.readUInt8(this.pos++);
+                c = this.buffer[this.pos++];
               }
 
               lowNibble = !lowNibble;
@@ -313,7 +315,7 @@ export default class BmpDecoder implements IImage {
       const padding = mode !== 0 ? 4 - mode : 0;
 
       this.scanImage(padding, xLen, (x, line) => {
-        const b = this.buffer.readUInt8(this.pos++);
+        const b = this.buffer[this.pos++];
         const location = line * this.width * 4 + x * 2 * 4;
 
         const first4 = b >> 4;
@@ -348,8 +350,8 @@ export default class BmpDecoder implements IImage {
       let location = 0;
 
       while (location < this.data.length) {
-        const a = this.buffer.readUInt8(this.pos++);
-        const b = this.buffer.readUInt8(this.pos++);
+        const a = this.buffer[this.pos++];
+        const b = this.buffer[this.pos++];
 
         //absolute mode
         if (a === 0) {
@@ -367,14 +369,14 @@ export default class BmpDecoder implements IImage {
 
           if (b === 2) {
             //offset x,y
-            const x = this.buffer.readUInt8(this.pos++);
-            const y = this.buffer.readUInt8(this.pos++);
+            const x = this.buffer[this.pos++];
+            const y = this.buffer[this.pos++];
 
             lines += this.bottomUp ? -y : y;
             location += y * this.width * 4 + x * 4;
           } else {
             for (let i = 0; i < b; i++) {
-              const c = this.buffer.readUInt8(this.pos++);
+              const c = this.buffer[this.pos++];
               location = this.setPixelData(location, c);
             }
 
@@ -396,7 +398,7 @@ export default class BmpDecoder implements IImage {
       const padding = mode !== 0 ? 4 - mode : 0;
 
       this.scanImage(padding, this.width, (x, line) => {
-        const b = this.buffer.readUInt8(this.pos++);
+        const b = this.buffer[this.pos++];
         const location = line * this.width * 4 + x * 4;
 
         if (b < this.palette.length) {
@@ -421,7 +423,7 @@ export default class BmpDecoder implements IImage {
 
     this.scanImage(padding, this.width, (x, line) => {
       const loc = line * this.width * 4 + x * 4;
-      const px = this.buffer.readUInt16LE(this.pos);
+      const px = this.bufferView.getUint16(this.pos, true);
       this.pos += 2;
 
       this.data[loc + this.locRed] = this.shiftRed(px);
@@ -436,9 +438,9 @@ export default class BmpDecoder implements IImage {
 
     this.scanImage(padding, this.width, (x, line) => {
       const loc = line * this.width * 4 + x * 4;
-      const blue = this.buffer.readUInt8(this.pos++);
-      const green = this.buffer.readUInt8(this.pos++);
-      const red = this.buffer.readUInt8(this.pos++);
+      const blue = this.buffer[this.pos++];
+      const green = this.buffer[this.pos++];
+      const red = this.buffer[this.pos++];
 
       this.data[loc + this.locRed] = red;
       this.data[loc + this.locGreen] = green;
@@ -476,7 +478,7 @@ export default class BmpDecoder implements IImage {
   }
 
   private readUInt32LE() {
-    const value = this.buffer.readUInt32LE(this.pos);
+    const value = this.bufferView.getUint32(this.pos, true);
     this.pos += 4;
     return value;
   }

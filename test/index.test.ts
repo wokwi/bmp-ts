@@ -7,10 +7,10 @@ import bmp from '../lib/';
 const createPath = (p: string) => path.join(process.cwd(), p);
 const readFile = (p: string) => fs.readFileSync(createPath(p));
 
-const checksum = (str: Buffer, algorithm = 'md5', encoding = 'hex') =>
+const checksum = (data: Uint8Array, algorithm = 'md5', encoding = 'hex') =>
   crypto
     .createHash(algorithm)
-    .update(str.toString(), 'utf8')
+    .update(Buffer.from(data).toString(), 'utf8')
     // @ts-ignore
     .digest(encoding);
 

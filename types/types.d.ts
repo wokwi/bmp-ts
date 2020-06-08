@@ -35,5 +35,5 @@ declare interface IImage {
   colors?: number;
   importantColors?: number;
   palette?: IColor[];
-  data: Buffer;
+  data: Uint8Array;
 }

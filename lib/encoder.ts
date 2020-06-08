@@ -29,11 +29,12 @@ export default class BmpEncoder implements IImage {
   public readonly importantColors: number;
   public readonly rawSize: number;
   public readonly headerSize: number;
-  public readonly data: Buffer;
+  public readonly data: Uint8Array;
   public readonly palette: IColor[];
 
   private readonly extraBytes: number;
-  private readonly buffer: Buffer;
+  private readonly buffer: Uint8Array;
+  private readonly dataView: DataView;
   private readonly bytesInColor: number;
   private pos: number;
 
@@ -94,7 +95,9 @@ export default class BmpEncoder implements IImage {
     // Why 2?
     this.rawSize = this.height * rowBytes * 4 + 2;
     this.fileSize = this.rawSize + this.offset;
-    this.data = Buffer.alloc(this.fileSize, 0x1);
+    this.data = new Uint8Array(this.fileSize);
+    this.dataView = new DataView(this.data.buffer);
+    this.data.fill(1);
     this.pos = 0;
 
     this.encode();
@@ -127,8 +130,8 @@ export default class BmpEncoder implements IImage {
   }
 
   private writeHeader() {
-    this.data.write(this.flag, this.pos, 2);
-    this.pos += 2;
+    this.data[this.pos++] = this.flag.charCodeAt(0);
+    this.data[this.pos++] = this.flag.charCodeAt(1);
 
     this.writeUInt32LE(this.fileSize);
 
@@ -140,10 +143,10 @@ export default class BmpEncoder implements IImage {
     this.writeUInt32LE(this.width);
     this.writeUInt32LE(this.height);
 
-    this.data.writeUInt16LE(this.planes, this.pos);
+    this.dataView.setUint16(this.pos, this.planes, true);
     this.pos += 2;
 
-    this.data.writeUInt16LE(this.bitPP, this.pos);
+    this.dataView.setUint16(this.pos, this.bitPP, true);
     this.pos += 2;
 
     this.writeUInt32LE(this.compress);
@@ -324,7 +327,7 @@ export default class BmpEncoder implements IImage {
   }
 
   private writeUInt32LE(value: number) {
-    this.data.writeUInt32LE(value, this.pos);
+    this.dataView.setUint32(this.pos, value, true);
     this.pos += 4;
   }
 }
