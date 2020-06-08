@@ -1,10 +1,10 @@
 import HeaderTypes from './header-types';
 import maskColor from './mask-color';
-import { Compression, IColor, IDecoderOptions, IImage } from './types';
+import { Compression, IBitmapImage, IColor, IDecoderOptions } from './types';
 
 type IColorProcessor = (x: number, line: number) => void;
 
-export default class BmpDecoder implements IImage {
+export default class BmpDecoder implements IBitmapImage {
   // Header
   public flag: string;
   public fileSize!: number;

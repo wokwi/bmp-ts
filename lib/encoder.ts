@@ -1,5 +1,5 @@
 import HeaderTypes from './header-types';
-import { IColor, IImage } from './types';
+import { IBitmapImage, IColor, IImage } from './types';
 
 type IColorProcessor = (p: number, i: number, x: number, y: number) => number;
 
@@ -13,7 +13,7 @@ function createColor(color: IColor): number {
   );
 }
 
-export default class BmpEncoder implements IImage {
+export default class BmpEncoder implements IBitmapImage {
   public readonly fileSize: number;
   public readonly reserved1: number;
   public readonly reserved2: number;
