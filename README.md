@@ -1,19 +1,19 @@
 <div align="center">
   <img width="200" height="200"
     src="./logo.png">
-  <h1>bmp-ts</h1>
-  <p>A pure typescript <code>bmp</code> encoder and decoder.</p>
+  <h1>@wokwi/bmp-ts</h1>
+  <p>A pure TypeScript <code>bmp</code> encoder and decoder.</p>
 </div
 
-[![Codecov](https://img.shields.io/codecov/c/github/hipstersmoothie/bmp-ts.svg?style=for-the-badge)](https://codecov.io/gh/hipstersmoothie/bmp-ts)
+[![Codecov](https://img.shields.io/codecov/c/github/wokwi/bmp-ts.svg?style=for-the-badge)](https://codecov.io/gh/wokwi/bmp-ts)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=for-the-badge)](https://github.com/prettier/prettier)
 
-Supports decoding and encoding in all bit depths (1, 4, 8, 16, 24, 32).
+Supports decoding and encoding in all bit depths (1, 4, 8, 16, 24, 32). Compatible with the browser and Node.js.
 
 ## Install
 
 ```sh
-npm install bmp-ts
+npm install @wokwi/bmp-ts
 ```
 
 ## Usage
@@ -22,8 +22,9 @@ npm install bmp-ts
 
 `decode` will return an object that includes all the header properties of the `bmp` image file and the data. See header definition [below](#header).
 
-```js
-const bmp = require('bmp-ts').default;
+```typescript
+import bmp from '@wokwi/bmp-ts';
+import fs from 'fs';
 const bmpBuffer = fs.readFileSync('bit24.bmp');
 const bmpData = bmp.decode(bmpBuffer);
 ```
@@ -32,8 +33,9 @@ const bmpData = bmp.decode(bmpBuffer);
 
 - toRGBA - switch the output to big endian RGBA, making it compatible with other libraries like `pngjs`
 
-```js
-const bmp = require('bmp-ts').default;
+```typescript
+import bmp from '@wokwi/bmp-ts';
+import fs from 'fs';
 const bmpBuffer = fs.readFileSync('bit24.bmp');
 const bmpData = bmp.decode(bmpBuffer, { toRGBA: true });
 ```
@@ -42,11 +44,11 @@ const bmpData = bmp.decode(bmpBuffer, { toRGBA: true });
 
 Currently compression is only supported during decoding. The following methods are implemented:
 
-- NONE - Most common
-- BI_RLE8 - Can be used only with 8-bit/pixel bitmap
-- BI_RLE4 - Can be used only with 4-bit/pixel bitmaps
-- BI_BIT_FIELDS - Huffman 1D - BITMAPV2INFOHEADER: RGB bit field masks, BITMAPV3INFOHEADER+: RGBA
-- BI_ALPHA_BIT_FIELDS - RGBA bit field masks - only Windows CE 5.0 with .NET 4.0 or later
+- `NONE` - Most common
+- `BI_RLE8` - Can be used only with 8-bit/pixel bitmap
+- `BI_RLE4` - Can be used only with 4-bit/pixel bitmaps
+- `BI_BIT_FIELDS` - Huffman 1D - BITMAPV2INFOHEADER: RGB bit field masks, BITMAPV3INFOHEADER+: RGBA
+- `BI_ALPHA_BIT_FIELDS` - RGBA bit field masks - only Windows CE 5.0 with .NET 4.0 or later
 
 ### Encoding
 
@@ -54,9 +56,9 @@ To encode an image all you need is a buffer with the image data, the height and 
 
 All header fields are valid options to `encode` and will be encoded into the header.
 
-```js
-const bmp = require('bmp-ts').default;
-const fs = require('fs');
+```typescript
+import bmp from '@wokwi/bmp-ts';
+import fs from 'fs';
 const bmpData = {
   data, // Buffer
   bitPP: 1 | 2 | 4 | 16 | 24 | 32, // The number of bits per pixel
@@ -108,7 +110,7 @@ Color Format:
 
 To encode to 4 or 8 bit a color palette must be provided. 1 bit defaults to black and white but you can override this via palette.
 
-```js
+```typescript
 const rawData = bmp.encode({
   data,
   bitPP: 8,
