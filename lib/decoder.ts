@@ -1,5 +1,6 @@
 import HeaderTypes from './header-types';
 import maskColor from './mask-color';
+import { Compression, IColor, IDecoderOptions, IImage } from './types';
 
 type IColorProcessor = (x: number, line: number) => void;
 
@@ -46,12 +47,20 @@ export default class BmpDecoder implements IImage {
   private shiftBlue!: (x: number) => number;
   private shiftAlpha!: (x: number) => number;
 
-  constructor(buffer: Uint8Array, { toRGBA }: IDecoderOptions = { toRGBA: false }) {
+  constructor(
+    buffer: Uint8Array,
+    { toRGBA }: IDecoderOptions = { toRGBA: false }
+  ) {
     this.buffer = buffer;
-    this.bufferView = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+    this.bufferView = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     this.toRGBA = !!toRGBA;
     this.bottomUp = true;
-    this.flag = String.fromCharCode(this.buffer[0]) + String.fromCharCode(this.buffer[1]);
+    this.flag =
+      String.fromCharCode(this.buffer[0]) + String.fromCharCode(this.buffer[1]);
     this.pos = 2;
 
     if (this.flag !== 'BM') {

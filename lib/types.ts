@@ -1,4 +1,4 @@
-declare const enum Compression {
+export const enum Compression {
   NONE = 0,
   BI_RLE8 = 1,
   BI_RLE4 = 2,
@@ -6,18 +6,18 @@ declare const enum Compression {
   BI_ALPHA_BIT_FIELDS = 6
 }
 
-declare interface IColor {
+export interface IColor {
   red: number;
   green: number;
   blue: number;
   quad: number;
 }
 
-declare interface IDecoderOptions {
+export interface IDecoderOptions {
   toRGBA?: boolean;
 }
 
-declare interface IImage {
+export interface IImage {
   flag: string;
   fileSize: number;
   reserved1?: number;

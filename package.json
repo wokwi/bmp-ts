@@ -10,8 +10,7 @@
     "url": "https://github.com/hipstersmoothie/bmp-ts"
   },
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "author": {
     "name": "Andrew lisowski",

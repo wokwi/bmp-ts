@@ -1,4 +1,5 @@
 import HeaderTypes from './header-types';
+import { IColor, IImage } from './types';
 
 type IColorProcessor = (p: number, i: number, x: number, y: number) => number;
 
