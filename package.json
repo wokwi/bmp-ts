@@ -1,13 +1,13 @@
 {
   "name": "@wokwi/bmp-ts",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A pure TypeScript BMP encoder and decoder",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hipstersmoothie/bmp-ts"
+    "url": "https://github.com/wokwi/bmp-ts"
   },
   "files": [
     "dist"
