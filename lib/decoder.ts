@@ -468,11 +468,7 @@ export default class BmpDecoder implements IImage {
       const line = this.bottomUp ? y : this.height - 1 - y;
 
       for (let x = 0; x < width; x++) {
-        const result = processPixel.call(this, x, line);
-
-        if (result === false) {
-          return;
-        }
+        processPixel.call(this, x, line);
       }
 
       this.pos += padding;
