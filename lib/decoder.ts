@@ -1,6 +1,6 @@
 import HeaderTypes from './header-types';
 import maskColor from './mask-color';
-import { Compression, IBitmapImage, IColor, IDecoderOptions } from './types';
+import { BitsPerPixel, Compression, IBitmapImage, IColor, IDecoderOptions } from './types';
 
 type IColorProcessor = (x: number, line: number) => void;
 
@@ -15,7 +15,7 @@ export default class BmpDecoder implements IBitmapImage {
   public width!: number;
   public height!: number;
   public planes!: number;
-  public bitPP!: number;
+  public bitPP!: BitsPerPixel;
   public compression?: Compression;
   public rawSize!: number;
   public hr!: number;
@@ -98,7 +98,7 @@ export default class BmpDecoder implements IBitmapImage {
 
     this.planes = this.bufferView.getUint16(this.pos, true);
     this.pos += 2;
-    this.bitPP = this.bufferView.getUint16(this.pos, true);
+    this.bitPP = this.bufferView.getUint16(this.pos, true) as BitsPerPixel;
     this.pos += 2;
 
     this.compression = this.readUInt32LE();

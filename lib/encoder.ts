@@ -1,5 +1,5 @@
 import HeaderTypes from './header-types';
-import { IBitmapImage, IColor, IImage } from './types';
+import { BitsPerPixel, IBitmapImage, IColor, IImage } from './types';
 
 type IColorProcessor = (p: number, i: number, x: number, y: number) => number;
 
@@ -22,7 +22,7 @@ export default class BmpEncoder implements IBitmapImage {
   public readonly flag: string;
   public readonly height: number;
   public readonly planes: number;
-  public readonly bitPP: number;
+  public readonly bitPP: BitsPerPixel;
   public readonly compress: number;
   public readonly hr: number;
   public readonly vr: number;

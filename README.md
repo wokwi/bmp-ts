@@ -61,7 +61,7 @@ import bmp from '@wokwi/bmp-ts';
 import fs from 'fs';
 const bmpData = {
   data, // Buffer
-  bitPP: 1 | 2 | 4 | 16 | 24 | 32, // The number of bits per pixel
+  bitPP: 1 | 4 | 8 | 16 | 24 | 32, // The number of bits per pixel
   width, // Number
   height // Number
 };

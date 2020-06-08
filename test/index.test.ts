@@ -1,8 +1,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-
-import bmp from '../lib/';
+import bmp, { BitsPerPixel } from '../lib/';
 
 const createPath = (p: string) => path.join(process.cwd(), p);
 const readFile = (p: string) => fs.readFileSync(createPath(p));
@@ -56,7 +55,7 @@ describe('decode', () => {
 });
 
 describe('encode', () => {
-  const encodeTest = (bitPP: number, file = 32) => () => {
+  const encodeTest = (bitPP: BitsPerPixel, file = 32) => () => {
     const buff = readFile(`./test/images/bit${file}.bmp`);
     const bitmap = bmp.decode(buff);
 
@@ -66,7 +65,7 @@ describe('encode', () => {
     expect(checksum(data)).toMatchSnapshot();
   };
 
-  const errorTest = (bitPP: number) => () => {
+  const errorTest = (bitPP: BitsPerPixel) => () => {
     const buff = readFile('./test/images/bit32.bmp');
     const bitmap = bmp.decode(buff);
 
@@ -94,7 +93,7 @@ describe('encode', () => {
 
 describe('decode -> encode', () => {
   const compareDecodeEncode = (
-    bitPP: number,
+    bitPP: BitsPerPixel,
     file: number | string = bitPP
   ) => () => {
     const before = readFile(`./test/images/bit${file}.bmp`);

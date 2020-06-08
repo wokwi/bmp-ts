@@ -6,6 +6,8 @@ export const enum Compression {
   BI_ALPHA_BIT_FIELDS = 6
 }
 
+export type BitsPerPixel = 1 | 4 | 8 | 16 | 24 | 32;
+
 export interface IColor {
   red: number;
   green: number;
@@ -20,7 +22,7 @@ export interface IDecoderOptions {
 export interface IImage {
   width: number;
   height: number;
-  bitPP: number;
+  bitPP: BitsPerPixel;
   data: Uint8Array;
   reserved1?: number;
   reserved2?: number;
