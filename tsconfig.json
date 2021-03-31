@@ -7,7 +7,7 @@
     "downlevelIteration": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "dist",
+    "outDir": "dist/esm",
     "preserveConstEnums": true,
     "removeComments": false,
     "skipLibCheck": true,

@@ -2,8 +2,9 @@
   "name": "@wokwi/bmp-ts",
   "version": "2.0.1",
   "description": "A pure TypeScript BMP encoder and decoder",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,7 +18,7 @@
     "email": "lisowski54@gmail.com"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc --sourceMap false && tsc -m commonjs --outDir dist/cjs --sourceMap false",
     "lint": "tslint -p . --format stylish",
     "test": "jest",
     "release": "auto shipit"
@@ -32,6 +33,7 @@
     "jest": "^26.0.1",
     "lint-staged": "^7.3.0",
     "prettier": "^1.14.3",
+    "rimraf": "^3.0.2",
     "ts-jest": "^26.1.0",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
